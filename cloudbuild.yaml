@@ -1,7 +1,19 @@
 steps:
   # build & push the container image
 - name: "gcr.io/kaniko-project/executor:latest"
-  args: ["--cache=true", "--cache-ttl=48h", "--destination=us-central1-docker.pkg.dev/ranciato-e90-final-project/e90-final/e90-final"]
+  id: "Build the container"
+  # args: ["--cache=true", "--cache-ttl=48h", "--destination=us-central1-docker.pkg.dev/ranciato-e90-final-project/e90-final/e90-final"]
+  args: ["--cache=true", "--cache-ttl=48h", "--destination=public.ecr.aws/a3x7w5w4/alanranciato/e90-final:latest"]
+  env: ["AWS_ACCESS_KEY_ID=$$KEY_ID", "AWS_SECRET_ACCESS_KEY=$$KEY"]
+  secretEnv: ['KEY_ID', 'KEY']
+
   # Deploy container image to Cloud Run
 - name: "gcr.io/cloud-builders/gcloud"
+  id: "Deploy to Google Cloud"
   args: ['beta', 'run', 'deploy', 'e90-final', '--image', 'us-central1-docker.pkg.dev/ranciato-e90-final-project/e90-final/e90-final:latest', '--region', 'us-central1', '--allow-unauthenticated', '--platform', 'managed']
+availableSecrets:
+  secretManager:
+  - versionName: projects/279398674500/secrets/aws-key-id/versions/1
+    env: 'KEY_ID'
+  - versionName: projects/279398674500/secrets/aws-key/versions/1
+    env: 'KEY'
