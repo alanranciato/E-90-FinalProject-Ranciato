@@ -18,9 +18,9 @@ steps:
 - name: "gcr.io/cloud-builders/gcloud"
   id: "Deploy to Google Cloud"
   args: ['beta', 'run', 'deploy', 'e90-final', '--image', 'us-central1-docker.pkg.dev/ranciato-e90-final-project/e90-final/e90-final:latest', '--region', 'us-central1', '--allow-unauthenticated', '--platform', 'managed']
-availableSecrets:
-  secretManager:
-  - versionName: projects/279398674500/secrets/aws-key-id/versions/1
-    env: 'KEY_ID'
-  - versionName: projects/279398674500/secrets/aws-key/versions/1
-    env: 'KEY'
+#availableSecrets:
+#  secretManager:
+#  - versionName: projects/279398674500/secrets/aws-key-id/versions/1
+#    env: 'KEY_ID'
+#  - versionName: projects/279398674500/secrets/aws-key/versions/1
+#    env: 'KEY'
