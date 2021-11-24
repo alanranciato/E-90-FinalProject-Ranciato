@@ -3,13 +3,13 @@ steps:
 steps:
 - name: gcr.io/$PROJECT_ID/awscli
   id: "Login to AWS / Docker"
-  args: ["ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/a3x7w5w4"]
+  #args: ["ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/a3x7w5w4"]
   env: ["AWS_ACCESS_KEY_ID=$$KEY_ID", "AWS_SECRET_ACCESS_KEY=$$KEY"]
   secretEnv: ['KEY_ID', 'KEY']
   #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/a3x7w5w4
 #- name: gcr.io/$PROJECT_ID/awscli
 #  id: "Build the Image"
-#  args: ['ecr-public', 'get-login-password', '--region us-east-1', 'docker login --username $$KEY_ID --password-stdin $$KEY']
+  args: ['ecr-public', 'get-login-password', '--region us-east-1', 'docker login --username $$KEY_ID --password-stdin $$KEY']
 #  env: ["AWS_ACCESS_KEY_ID=$$KEY_ID", "AWS_SECRET_ACCESS_KEY=$$KEY"]
 #  secretEnv: ['KEY_ID', 'KEY']
 
