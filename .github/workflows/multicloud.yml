@@ -34,7 +34,7 @@ on:
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ranciato-e90           # set this to your Amazon ECR repository name
-  APPRUNNER_SERVICE: e90-final                 # set this to your Amazon AppRunner service name
+  SERVICE_NAME: e90-final                 # set this to your Amazon AppRunner service name
   CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
 
@@ -93,5 +93,7 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SERVICE_NAME/$IMAGE_TAG
+        docker tag $ECR_REPOSITORY:$SERVICE_NAME/latest $ECR_REGISTRY/$ECR_REPOSITORY:$SERVICE_NAME/latest
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SERVICE_NAME/latest
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
