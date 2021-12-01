@@ -1,11 +1,13 @@
+import os
 from flask import Flask, request
 
 app = Flask(__name__)
+cloudName = os.getenv('CLOUD_LOCATION')
 
 @app.route("/", methods=["GET"])
 def homepage():
     if request.method == "GET":
-        return "Hello World!"
+        return "Hello World from {0}".format(cloudName)
 
 #PORT = int(os.environ.get("PORT", 8080))
 PORT = 8080
