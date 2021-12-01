@@ -34,9 +34,12 @@ on:
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ranciato-e90           # set this to your Amazon ECR repository name
+  GCP_REPOSITORY: ranciato-e90           # set this to your GCP Artifact Registry repository name
+  GCP_REGISTRY: us-east4-docker.pkg.dev/ranciato-e90-final-project           # set this to your GCP Artifact Registry name
   SERVICE_NAME: e90-final                 # set this to your Amazon AppRunner service name
-  CONTAINER_NAME: MY_CONTAINER_NAME           # set this to the name of the container in the
-                                               # containerDefinitions section of your task definition
+  GCP_REGION: us-east4
+  GCP_PROJECT_ID: ranciato-e90-final-project
+
 
 jobs:
   build:
@@ -97,3 +100,37 @@ jobs:
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  deploygcp:
+    needs: build
+    name: Deploy to GCP
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - uses: actions/cache@v2
+      id: restore-build
+      with:
+        path: ./*
+        key: ${{ github.sha }}
+        
+    - name: Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ env.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_GH_BUILDER_KEY }}
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        GCP_REGISTRY: ${{ env.GCP_REGISTRY }}
+        GCP_REPOSITORY: ${{ env.GCP_REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container and
+        # push it to GCP
+        docker build -t $GCP_REPOSITORY/$GCP_REPOSITORY:$IMAGE_TAG .
+        docker push $GCP_REPOSITORY/$GCP_REPOSITORY:$IMAGE_TAG
+        docker tag $GCP_REPOSITORY/$GCP_REPOSITORY:$IMAGE_TAG $GCP_REPOSITORY/$GCP_REPOSITORY:latest
+        docker push $GCP_REPOSITORY/$GCP_REPOSITORY:latest
+        echo "::set-output name=image::$GCP_REPOSITORY/$GCP_REPOSITORY:$IMAGE_TAG"
