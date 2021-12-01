@@ -53,6 +53,12 @@ jobs:
         # Tests would normally go here
         echo "Tests passed"
 
+    - uses: actions/cache@v2
+      id: restore-build
+      with:
+        path: ./*
+        key: ${{ github.sha }}
+
   deployaws:
     needs: build
     name: Deploy to AWS
@@ -60,6 +66,12 @@ jobs:
     environment: production
 
     steps:
+    - uses: actions/cache@v2
+      id: restore-build
+      with:
+        path: ./*
+        key: ${{ github.sha }}
+        
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
