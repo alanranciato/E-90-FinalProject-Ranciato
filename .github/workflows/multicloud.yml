@@ -35,7 +35,6 @@ env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: ranciato-e90           # set this to your Amazon ECR repository name
   GCP_REPOSITORY: ranciato-e90           # set this to your GCP Artifact Registry repository name
-  GCP_REGISTRY: us-east4-docker.pkg.dev/ranciato-e90-final-project           # set this to your GCP Artifact Registry name
   SERVICE_NAME: e90-final                 # set this to your Amazon AppRunner service name
   GCP_REGION: us-east4
   GCP_PROJECT_ID: ranciato-e90-final-project
@@ -138,8 +137,8 @@ jobs:
       run: |
         # Build a docker container and
         # push it to GCP
-        docker build -t $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG .
-        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG
-        docker tag $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:latest
-        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:latest
-        echo "::set-output name=image::$GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG"
+        docker build -t $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG .
+        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG
+        docker tag $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:latest
+        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:latest
+        echo "::set-output name=image::$GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG"
