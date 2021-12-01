@@ -114,7 +114,7 @@ jobs:
         key: ${{ github.sha }}
         
     - name: Setup Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+      uses: google-github-actions/setup-gcloud
       with:
         project_id: ${{ env.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_GH_BUILDER_KEY }}
@@ -122,20 +122,24 @@ jobs:
     # Configure Docker to use the gcloud command-line tool as a credential
     # helper for authentication
     - name: Authorize Docker
+      env:
+        GCP_REGION: ${{ env.GCP_REGION }}
       run: |-
-        gcloud --quiet auth configure-docker
+        gcloud auth configure-docker $GCP_REGION-docker.pkg.dev
 
     - name: Build, tag, and push image to Google Cloud Artifact Registry
       id: build-image
       env:
-        GCP_REGISTRY: ${{ env.GCP_REGISTRY }}
+        GCP_REGISTRY: ${{ env.GCP_REGION }}-docker.pkg.dev
         GCP_REPOSITORY: ${{ env.GCP_REPOSITORY }}
+        SERVICE_NAME: ${{ env.SERVICE_NAME }} 
+        GCP_PROJECT_ID: ${{ env.GCP_PROJECT_ID }} 
         IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build a docker container and
         # push it to GCP
-        docker build -t $GCP_REGISTRY/$GCP_REPOSITORY:$IMAGE_TAG .
-        docker push $GCP_REGISTRY/$GCP_REPOSITORY:$IMAGE_TAG
-        docker tag $GCP_REGISTRY/$GCP_REPOSITORY:$IMAGE_TAG $GCP_REGISTRY/$GCP_REPOSITORY:latest
-        docker push $GCP_REGISTRY/$GCP_REPOSITORY:latest
-        echo "::set-output name=image::$GCP_REGISTRY/$GCP_REPOSITORY:$IMAGE_TAG"
+        docker build -t $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG .
+        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG
+        docker tag $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:latest
+        docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:latest
+        echo "::set-output name=image::$GCP_REGISTRY/$GCP_PROJECT_ID/$REPOSITORY/$SERVICE_NAME:$IMAGE_TAG"
