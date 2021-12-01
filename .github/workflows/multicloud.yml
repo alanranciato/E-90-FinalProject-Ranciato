@@ -40,7 +40,6 @@ env:
   GCP_REGION: us-east4
   GCP_PROJECT_ID: ranciato-e90-final-project
 
-
 jobs:
   build:
     name: Build
@@ -119,6 +118,12 @@ jobs:
       with:
         project_id: ${{ env.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_GH_BUILDER_KEY }}
+    
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - name: Authorize Docker
+      run: |-
+        gcloud --quiet auth configure-docker
 
     - name: Build, tag, and push image to Google Cloud Artifact Registry
       id: build-image
