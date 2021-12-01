@@ -114,7 +114,7 @@ jobs:
         key: ${{ github.sha }}
         
     - name: Setup Google Cloud SDK
-      uses: google-github-actions/setup-gcloud
+      uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ env.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_GH_BUILDER_KEY }}
