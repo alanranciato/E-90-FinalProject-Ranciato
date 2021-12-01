@@ -53,7 +53,7 @@ jobs:
         # Tests would normally go here
         echo "Tests passed"
 
-  deployaws:
+  deploy:
     needs: build
     name: Deploy to AWS
     runs-on: ubuntu-latest
