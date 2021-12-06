@@ -3,7 +3,7 @@ from flask import Flask, request
 
 app = Flask(__name__)
 cloudName = os.getenv('CLOUD_LOCATION')
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 @app.route("/", methods=["GET"])
 def homepage():
