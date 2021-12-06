@@ -60,9 +60,9 @@ jobs:
         path: ./*
         key: ${{ github.sha }}
 
-  deployaws:
+  publishaws:
     needs: build
-    name: Deploy to AWS
+    name: Publish to AWS Elastic Container Registry
     runs-on: ubuntu-latest
     environment: production
 
@@ -100,9 +100,9 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-  deploygcp:
+  publishgcp:
     needs: build
-    name: Deploy to GCP
+    name: Publish to GCP Artifact Repository
     runs-on: ubuntu-latest
     environment: production
 
@@ -143,3 +143,34 @@ jobs:
         docker tag $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:latest
         docker push $GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:latest
         echo "::set-output name=image::$GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:$IMAGE_TAG"
+
+  deploygcp:
+    needs: publishgcp
+    name: Deploy to GCP Cloud Run
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Setup Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ env.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_GH_BUILDER_KEY }}
+    
+
+    - name: Deploy Service
+      id: deploy-service
+      env:
+        GCP_REGISTRY: ${{ env.GCP_REGION }}-docker.pkg.dev
+        GCP_REPOSITORY: ${{ env.GCP_REPOSITORY }}
+        SERVICE_NAME: ${{ env.SERVICE_NAME }} 
+        GCP_PROJECT_ID: ${{ env.GCP_PROJECT_ID }} 
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Launch the new container version in Cloud Run
+        gcloud run deploy e90-final \
+        --image=$GCP_REGISTRY/$GCP_PROJECT_ID/$GCP_REPOSITORY/$SERVICE_NAME:latest \
+        --platform=managed \
+        --region=$GCP_REGION \
+        --project=$GCP_PROJECT_ID
+        
