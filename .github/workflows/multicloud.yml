@@ -52,7 +52,7 @@ jobs:
     - name: Test
       run: |
         # Tests would normally go here
-        echo "Tests passed"
+        python -m unittest tests
 
     - uses: actions/cache@v2
       id: restore-build
