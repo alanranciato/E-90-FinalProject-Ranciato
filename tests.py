@@ -17,7 +17,7 @@ class TestSomething3(unittest.TestCase):
     def test_something(self):
         data = [1, 2, 3]
         result = sum(data)
-        self.assertEqual(result, 6)
+        self.assertEqual(result, 3)
 
 
 
