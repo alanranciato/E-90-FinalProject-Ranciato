@@ -4,7 +4,7 @@
 
 Links:  
 
-https://cloud.google.com/run/docs/quickstarts/build-and-deploy/python
-
-https://aws.amazon.com/apprunner/
-
+Project Document: Google Slides 
+GitHub Repo: https://github.com/alanranciato/E-90-FinalProject-Ranciato 
+Video Summary: https://youtu.be/_9xAYzzasQM 
+Full Video of Project: https://youtu.be/ZPAZhlFKJfY 
